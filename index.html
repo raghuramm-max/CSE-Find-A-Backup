@@ -1,83 +1,281 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CMRIT Backup Staff Finder</title>
 <style>
-:root{--bg:#f4f6fa;--card:#fff;--ink:#1c2533;--muted:#5d6b82;--line:#dde3ec;--brand:#1f3a68;--free:#e3f5e8;--freeInk:#16692f;--busy:#fdf1e0;--sel:#fff6bf;--accent:#2f6fdb}
-@media (prefers-color-scheme:dark){:root{--bg:#0f141c;--card:#18202c;--ink:#e6ebf3;--muted:#92a0b6;--line:#2a3547;--brand:#0c1a33;--free:#14301f;--freeInk:#7fdc9c;--busy:#33280f;--sel:#4a4310;--accent:#6aa2ff}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:600;letter-spacing:.2px}
-main{max-width:1150px;margin:0 auto;padding:20px 16px 90px}
-h1{font-size:22px;margin:4px 0 4px}
-.sub{color:var(--muted);margin:0 0 18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:18px}
-.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-label{display:block;font-weight:600;font-size:13px;margin-bottom:5px;color:var(--muted)}
-select{width:100%;padding:10px;font-size:15px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
-h2{font-size:16px;margin:0 0 10px}
-.tw{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
-th,td{border:1px solid var(--line);padding:7px 8px;text-align:center;vertical-align:middle}
-th{background:var(--bg);font-weight:600;font-size:12.5px}
-td.nm{text-align:left;font-weight:600;white-space:nowrap}
-td.free{background:var(--free);color:var(--freeInk)}
-td.busy{background:var(--busy)}
-.sel{outline:2px solid var(--accent);outline-offset:-2px}
-th.sel{background:var(--sel);color:var(--ink)}
-.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:10px;background:var(--free);color:var(--freeInk);margin-left:6px;font-weight:600}
-.tag.no{background:var(--busy);color:var(--ink)}
-.note{color:var(--muted);font-size:12.5px;margin-top:10px}
-.empty{color:var(--muted);text-align:center;padding:26px 0}
-footer{position:fixed;left:0;right:0;bottom:0;background:var(--brand);color:#fff;text-align:center;padding:10px 14px;font-size:13px}
+  :root {
+    --bg: #f4f6fa; --card: #ffffff; --ink: #1c2434; --muted: #5d6679; --line: #d9dfeb;
+    --brand: #14325c; --brand-ink: #ffffff; --accent: #1f6feb;
+    --free-bg: #e7f6ec; --free-ink: #17603a;
+    --class-bg: #e8f0fd; --class-ink: #17418a;
+    --duty-bg: #fdf3dc; --duty-ink: #7a5206;
+    --need: #fff6cc; --need-line: #e0b400;
+    --ok: #17603a; --no: #a12a2a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10151f; --card: #19212f; --ink: #e8ecf4; --muted: #9aa5ba; --line: #2b364a;
+      --brand: #0b1d3a; --accent: #6ea6ff;
+      --free-bg: #12301f; --free-ink: #7fd8a2;
+      --class-bg: #15294d; --class-ink: #a9c8ff;
+      --duty-bg: #3a2d10; --duty-ink: #f1cf84;
+      --need: #3b3510; --need-line: #b79a00;
+      --ok: #7fd8a2; --no: #ff9a9a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .topbar { background: var(--brand); color: var(--brand-ink); text-align: center;
+    padding: 12px 16px; font-weight: 600; letter-spacing: .2px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  .lead { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .form { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  label { display: block; font-size: .8rem; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
+  select { width: 100%; padding: 10px 10px; font: inherit; color: var(--ink); background: var(--card);
+    border: 1px solid var(--line); border-radius: 8px; }
+  select:focus-visible, input:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+  select:disabled { opacity: .55; }
+  .form-foot { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between; margin-top: 16px; }
+  .opt { display: flex; align-items: flex-start; gap: 8px; font-size: .9rem; color: var(--muted); max-width: 640px; }
+  .opt input { margin-top: 4px; }
+  button.ghost { font: inherit; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--line);
+    background: transparent; color: var(--ink); cursor: pointer; }
+  button.ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .hint { color: var(--muted); font-size: .85rem; margin: 10px 0 0; }
+  #results { margin-top: 24px; }
+  #empty { text-align: center; color: var(--muted); padding: 34px 12px; border: 2px dashed var(--line); border-radius: 12px; margin-top: 24px; }
+  .summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip { background: var(--class-bg); color: var(--class-ink); border-radius: 999px; padding: 3px 12px; font-size: .85rem; font-weight: 600; }
+  h2 { font-size: 1.1rem; margin: 22px 0 10px; }
+  h2:first-of-type { margin-top: 0; }
+  .wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { padding: 9px 11px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: 0; }
+  thead th { background: color-mix(in srgb, var(--brand) 8%, var(--card)); font-size: .8rem;
+    text-transform: uppercase; letter-spacing: .3px; color: var(--muted); white-space: nowrap; }
+  #sched td, #sched th { font-size: .95rem; }
+  .grid th.p { text-align: center; min-width: 100px; }
+  .grid th.p small { display: block; font-weight: 500; text-transform: none; letter-spacing: 0; }
+  .grid th.need { background: var(--need); color: var(--ink); box-shadow: inset 0 -3px 0 var(--need-line); }
+  .grid td.name { font-weight: 600; min-width: 150px; position: sticky; left: 0; background: var(--card); z-index: 1;
+    border-right: 1px solid var(--line); }
+  .grid thead th:first-child { position: sticky; left: 0; z-index: 2; }
+  .grid td.cell { font-size: .82rem; line-height: 1.35; border-left: 1px solid var(--line); }
+  .grid td.cell b { display: block; font-weight: 600; }
+  .grid td.cell span { display: block; opacity: .85; }
+  td.free { background: var(--free-bg); color: var(--free-ink); }
+  td.class { background: var(--class-bg); color: var(--class-ink); }
+  td.duty { background: var(--duty-bg); color: var(--duty-ink); }
+  td.need-col { box-shadow: inset 0 3px 0 var(--need-line); }
+  td.avail { text-align: center; min-width: 96px; white-space: nowrap; }
+  td.avail input { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+  td.avail small { display: block; font-weight: 600; margin-top: 2px; }
+  .yes { color: var(--ok); } .nope { color: var(--no); }
+  .small { font-weight: 400; color: var(--muted); font-size: .75rem; display: block; }
+  .msg { padding: 14px 16px; border-radius: 10px; background: var(--duty-bg); color: var(--duty-ink); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: .8rem; color: var(--muted); margin: 8px 0 0; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; border: 1px solid var(--line); }
+  footer { margin-top: 36px; padding: 18px 16px; border-top: 1px solid var(--line); text-align: center; color: var(--muted); font-size: .9rem; }
+  @media (max-width: 560px) { .grid td.name { min-width: 112px; font-size: .85rem; } h1 { font-size: 1.35rem; } main { padding-top: 16px; } }
 </style>
 </head>
 <body>
-<header>CMRIT: Property of department of computer sciences engineering</header>
+<div class="topbar">CMRIT: Property of department of computer sciences engineering</div>
+
 <main>
-<h1>Backup Staff Finder</h1>
-<p class="sub">Pick the lecturer on leave, the day and the time to see who can cover.</p>
-<div class="card form">
- <div><label for="lec">Lecturer</label><select id="lec"></select></div>
- <div><label for="day">Day for backup</label><select id="day"></select></div>
- <div><label for="tm">Time for backup</label><select id="tm"></select></div>
-</div>
-<div id="out"><div class="card empty">Select a lecturer, day and time to see the backup options.</div></div>
+  <h1>Backup Staff Finder</h1>
+  <p class="lead">Pick the lecturer on leave, the day and the time. The page lists that lecturer's classes and the staff who can cover them.</p>
+
+  <section class="card" aria-label="Leave details">
+    <div class="form">
+      <div><label for="lect">Lecturer</label>
+        <select id="lect"><option value="">— Select lecturer —</option></select></div>
+      <div><label for="day">Day for backup</label>
+        <select id="day"><option value="">— Select day —</option></select></div>
+      <div><label for="time">Time for backup</label>
+        <select id="time"><option value="">— Select time —</option></select></div>
+      <div><label for="sem">Semester</label>
+        <select id="sem" disabled><option value="">— Select lecturer first —</option></select></div>
+      <div><label for="sec">Section</label>
+        <select id="sec" disabled><option value="">— Select lecturer first —</option></select></div>
+    </div>
+    <div class="form-foot">
+      <label class="opt" style="text-transform:none;letter-spacing:0;font-weight:400;margin:0">
+        <input type="checkbox" id="strict">
+        <span>Also treat research / consultancy / projects / entrepreneurship load, DRC work and mandatory paper or patent time as busy (by default these slots count as free).</span>
+      </label>
+      <button class="ghost" id="reset" type="button">Clear all</button>
+    </div>
+    <p class="hint">Semester and section are optional. Leave them on "All" to cover every class of that lecturer in the chosen time.</p>
+  </section>
+
+  <div id="empty">Select a lecturer, a day and a time to see the schedule and the staff who can back up.</div>
+  <div id="results" aria-live="polite" hidden></div>
 </main>
+
 <footer>For any scheduling related issue, Please talk to Smitha madam, application related issues to Raghu Sir, and for all other issues, Prem Sir</footer>
+
 <script>
-const DATA={"slots": ["08:00 - 09:00 AM", "09:00 - 10:00 AM", "10:20 - 11:20 AM", "11:20 - 12:20 PM", "01:00 - 02:00 PM", "02:00 - 03:00 PM", "03:00 - 04:00 PM"], "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], "staff": [{"name": "Dr. Prem Kumar Ramesh", "sched": {"Mon": ["", "", "", "", "", "", ""], "Tue": ["", "", "", "", "", "", ""], "Wed": ["", "", "", "", "", "", ""], "Thu": ["", "", "", "", "", "", ""], "Fri": ["", "", "", "", "", "", ""], "Sat": ["", "", "", "", "", "", ""]}}, {"name": "Dr. Sagarika Behera", "sched": {"Mon": ["TOC-B", "", "3B1: DS Lab", "3B1: DS Lab", "", "R", "R"], "Tue": ["TOC-A", "", "TOC-B", "", "C", "C", "C"], "Wed": ["", "TOC-B", "3A3:DS Lab", "3A3:DS Lab", "", "MPatent", "MPatent"], "Thu": ["3C2: DS Lab", "3C2: DS Lab", "TOC-A", "", "", "", ""], "Fri": ["", "", "TOC-A", "", "TOC-B", "", ""], "Sat": ["", "TOC-A", "", "", "MPaper", "MPaper", ""]}}, {"name": "Dr. Preethi Sheba Hepsiba", "sched": {"Mon": ["3C3: PMG Lab", "3C3: PMG Lab", "P Load", "", "", "5C3: Web Lab", "5C3: Web Lab"], "Tue": ["5C1 :Web Lab", "5C1 :Web Lab", "", "TOC-C", "3C2: PMG lab", "3C2: PMG lab", ""], "Wed": ["5C2: Web Lab", "5C2: Web Lab", "", "", "M. Patent", "", ""], "Thu": ["3C1: PMG Lab", "3C1: PMG Lab", "TOC-C", "", "M. Patent", "", ""], "Fri": ["", "", "TOC-C", "", "M. Paper", "M. Paper", ""], "Sat": ["", "TOC-C", "C Load", "C Load", "R Load", "R Load", ""]}}, {"name": "Dr. Sanchari Saha", "sched": {"Mon": ["DRC work", "OOPS-A", "DBMS-ECE", "DRC work", "P Load", "M. paper", "M. paper"], "Tue": ["DRC work", "DRC work", "DBMS-ECE", "DRC work", "R Load", "R Load", "R Load"], "Wed": ["DRC work", "DRC work", "M. patent", "M. patent", "R Load", "", ""], "Thu": ["OOPS-A", "DRC work", "DBMS-ECE", "DRC work", "C Load", "", ""], "Fri": ["OOPS-A", "DRC work", "DRC work", "DBMS-ECE", "P Load", "P Load", "DRC work"], "Sat": ["E Load", "E Load", "DRC work", "OOPS-A", "C Load", "C Load", "C Load"]}}, {"name": "Dr. Manju V N", "sched": {"Mon": ["DS", "", "", "", "3A1: DS Lab", "3A1: DS Lab", ""], "Tue": ["3A2: DS lab", "3A2: DS lab", "", "DS", "", "", ""], "Wed": ["", "", "3A3:DS lab", "3A3:DS lab", "", "", ""], "Thu": ["", "", "", "", "", "", ""], "Fri": ["", "", "", "DS", "", "", ""], "Sat": ["", "DS", "", "", "", "", ""]}}, {"name": "Dr. Sumathi D", "sched": {"Mon": ["", "", "", "", "PE", "", ""], "Tue": ["", "", "", "", "PE", "", ""], "Wed": ["", "", "TYL-Agentic AI", "", "PE", "", ""], "Thu": ["", "PE", "", "", "TYL-Agentic AI", "", ""], "Fri": ["", "", "", "", "", "", "TYL-Agentic AI"], "Sat": ["", "", "TYL-Agentic AI", "", "", "", ""]}}, {"name": "Dr. Sreedevi N", "sched": {"Mon": ["", "IOT-A", "IOT-A", "", "", "7A3-IOT Lab", "7A3-IOT Lab"], "Tue": ["", "IOT-A", "", "IOT-A", "", "7A2-IoT lab", "7A2-IoT lab"], "Wed": ["Mandatory paper", "Mandatory paper", "7C3-PC Lab", "7C3-PC Lab", "", "Rload", "Rload"], "Thu": ["", "", "7B3-PC Lab", "7B3-PC Lab", "", "Rload", "Rload"], "Fri": ["C load", "C load", "7C2-PC Lab", "7C2-PC Lab", "7B1:-IOT Lab", "7B1:-IOT Lab", ""], "Sat": ["", "", "Mandatory patent", "Mandatory patent", "", "", ""]}}, {"name": "Prof. Savitha N J", "sched": {"Mon": ["Mandatory Patent", "Mandatory Patent", "R Load", "R Load", "PE", "7A3-IOT Lab", "7A3-IOT Lab"], "Tue": ["Mandatory Paper", "Mandatory Paper", "R Load", "R Load", "PE", "7A2-IoT lab", "7A2-IoT lab"], "Wed": ["R Load", "R Load", "", "", "PE", "", ""], "Thu": ["", "PE", "P Load", "E Load", "", "", ""], "Fri": ["7A1-IOT Lab", "7A1-IOT Lab", "", "", "7B1:-IOT Lab", "7B1:-IOT Lab", ""], "Sat": ["", "", "", "", "", "", ""]}}, {"name": "Prof. Smitha N", "sched": {"Mon": ["Mandatory Paper", "Mandatory Paper", "D2:(L-403)-C Lab", "D2:(L-403)-C Lab", "P Load", "E Load", "OS-B"], "Tue": ["", "OS-B", "R Load", "R Load", "H2:(L-403)-C Lab", "H2:(L-403)-C Lab", ""], "Wed": ["OS-A", "", "", "OS-B", "", "", ""], "Thu": ["", "OS-A", "N1:(L 505)-C lab", "N1:(L 505)-C lab", "", "", ""], "Fri": ["OS_B", "", "OS-A", "", "", "Mandatory Patent", "Mandatory Patent"], "Sat": ["", "", "OS-A", "", "R Load", "R Load", ""]}}, {"name": "Prof. Navaneetha", "sched": {"Mon": ["", "", "3B1: DS Lab", "3B1: DS Lab", "DS-B", "", ""], "Tue": ["", "", "3B3: DS Lab", "3B3: DS Lab", "", "", ""], "Wed": ["DS-B", "", "", "", "", "", ""], "Thu": ["", "", "3B2: DSLab", "3B2: DSLab", "", "", ""], "Fri": ["", "", "", "DS-B", "", "", ""], "Sat": ["", "DS-B", "", "", "", "", ""]}}, {"name": "Prof. Krishna Sowjanya K", "sched": {"Mon": ["", "CNS-C", "", "", "RLoad", "5C1:CN Lab", "5C1:CN Lab"], "Tue": ["5C2 :CN Lab", "5C2 :CN Lab", "CN-C", "", "", "CNS-C", ""], "Wed": ["5C3: CN Lab", "5C3: CN Lab", "", "", "RLoad", "M-Patent", "M-Patent"], "Thu": ["CNS-C", "", "", "CN-C", "", "", ""], "Fri": ["", "CNS-C", "", "CN-C", "M-Paper", "M-Paper", ""], "Sat": ["CN-C", "", "", "", "", "", ""]}}, {"name": "Prof. Paramita Mitra", "sched": {"Mon": ["IOT-B", "R", "5B3:CN Lab", "5B3:CN Lab", "M Paper", "M Paper", "R"], "Tue": ["5C2-CN Lab", "5C2-CN Lab", "IOT-B", "R", "P", "5B2: CN Lab", "5B2: CN Lab"], "Wed": ["7B3- IoT lab", "7B3- IoT lab", "R", "IOT-B", "P", "", ""], "Thu": ["Mpatent", "Mpatent", "7B2-IOT Lab-", "7B2-IOT Lab-", "P", "", ""], "Fri": ["C", "IOT-B", "M Paper", "M Paper", "7B1:-IOT Lab", "7B1:-IOT Lab", "C"], "Sat": ["R", "R", "Mpatent", "Mpatent", "M Paper", "M Paper", "R"]}}, {"name": "Prof. Manjula Subramaniam", "sched": {"Mon": ["OOPS-B", "", "3B2:OOPS Lab", "3B2:OOPS Lab", "", "", "RMIPR-A"], "Tue": ["", "", "3B1: OOPS Lab", "3B1: OOPS Lab", "P1 (101):C lab", "P1 (101):C lab", ""], "Wed": ["", "OOPS-B", "", "", "Mandatory Paper", "", ""], "Thu": ["E1:L-402)-C Lab", "E1:L-402)-C Lab", "3B3: OOPS Lab", "3B3: OOPS Lab", "Mandatory Paper", "", ""], "Fri": ["", "", "O1:(L-502)", "O1:(L-502)", "OOPS-B", "R Load", "RLoad"], "Sat": ["OOPS-B", "", "Mandatory Patent", "Mandatory Patent", "", "RMIPR-A", ""]}}, {"name": "Prof. Rajini Tiwari", "sched": {"Mon": ["3C1: DS Lab", "3C1: DS Lab", "", "", "3A1: DS Lab", "3A1: DS Lab", ""], "Tue": ["3A2: DS-Lab", "3A2: DS-Lab", "DS", "", "3C3: DS Lab", "3C3: DS Lab", ""], "Wed": ["DS", "", "", "", "", "", ""], "Thu": ["3C2: DS Lab", "3C2: DS Lab", "3B2: DS-Lab", "3B2: DS-Lab", "", "", ""], "Fri": ["", "", "DS", "", "", "", ""], "Sat": ["DS", "", "", "", "", "", ""]}}, {"name": "Prof. ANN MATHEWS", "sched": {"Mon": ["3C2: OOPS", "3C2: OOPS", "", "PC-B", "", "", ""], "Tue": ["PC-B", "", "", "", "", "", ""], "Wed": ["7B1:-PC Lab", "7B1:-PC Lab", "3A1:-OOPS lab", "3A1:-OOPS lab", "", "", ""], "Thu": ["3C3: OOPS", "3C3: OOPS", "7B3-PC Lab-", "7B3-PC Lab-", "PC-B", "", ""], "Fri": ["", "", "PC-B", "", "7B2-PC Lab", "7B2-PC Lab", ""], "Sat": ["", "", "", "", "", "", ""]}}, {"name": "Prof. Lynsha pratheeba", "sched": {"Mon": ["B2:(L-403)-C Lab", "B2:(L-403)-C Lab", "", "", "3A3:PMG", "3A3:PMG", ""], "Tue": ["3A1 PMG", "3A1 PMG", "", "", "", "", ""], "Wed": ["", "", "3A2:-PMG", "3A2:-PMG", "", "", ""], "Thu": ["", "", "D1:L-403)- C Lab", "D1:L-403)- C Lab", "", "", ""], "Fri": ["", "", "G1(L-402)-C Lab", "G1(L-402)-C Lab", "IDT-J", "IDT-J", ""], "Sat": ["", "", "IDT-I", "IDT-I", "", "", ""]}}, {"name": "Prof. Rajeshwari", "sched": {"Mon": ["", "", "SEPM-A", "", "3A3:PMG", "3A3:PMG", ""], "Tue": ["3A1 PMG", "3A1 PMG", "E - Load", "E - Load", "", "", "SEPM-A"], "Wed": ["M. Paper", "M. Paper", "TYL-Agentic AI", "", "M.Patent", "M.Patent", ""], "Thu": ["SEPM-A", "", "3B1: PMG", "3B1: PMG", "TYL-Agentic AI", "", ""], "Fri": ["R Load", "R Load", "", "", "", "", "TYL-Agentic AI"], "Sat": ["P - Load", "P - Load", "TYL-Agentic AI", "", "", "", "SEPM-A"]}}, {"name": "Prof. Ranjini K", "sched": {"Mon": ["5A3: CN Lab", "5A3: CN Lab", "5B3:CN Lab", "5B3:CN Lab", "CN-B", "", ""], "Tue": ["", "", "5A2: CN Lab", "5A2: CN Lab", "", "5B2: CN Lab", "5B2: CN Lab"], "Wed": ["", "", "", "CN-B", "", "", ""], "Thu": ["5B1:CN Lab:", "5B1:CN Lab:", "", "", "", "", ""], "Fri": ["5A1: CN Lab", "5A1: CN Lab", "", "CN-B", "", "", ""], "Sat": ["", "", "", "CN-B", "", "", ""]}}, {"name": "Prof. Pooja Goud", "sched": {"Mon": ["5A3: CN Lab", "5A3: CN Lab", "", "", "CN-A", "5C1:CN Lab", "5C1:CN Lab"], "Tue": ["", "", "5A2: CN Lab", "5A2: CN Lab", "", "CN-A", ""], "Wed": ["5C3: CN Lab:", "5C3: CN Lab:", "", "", "", "", ""], "Thu": ["5B1:CN Lab", "5B1:CN Lab", "", "CN-A", "", "", ""], "Fri": ["5A1: CN Lab", "5A1: CN Lab", "", "CN-A", "", "", ""], "Sat": ["", "", "", "", "", "", ""]}}, {"name": "Prof. Reshma", "sched": {"Mon": ["", "CNS-B", "", "", "F2:(L-403)-C Lab", "F2:(L-403)-C Lab", ""], "Tue": ["", "", "CNS-A", "CNS-B", "P1 (101):C lab", "P1 (101):C lab", ""], "Wed": ["G3:(L-402)- C Lab", "G3:(L-402)- C Lab", "", "CNS-A", "RLOAD", "RLOAD", "RLOAD"], "Thu": ["CNS-B", "", "", "CNS-A", "M PAPER", "M PAPER", "M PAPER"], "Fri": ["CNS-B", "", "CNS-A", "", "M PATENT", "", ""], "Sat": ["E LOAD", "E LOAD", "E LOAD", "E LOAD", "", "", ""]}}, {"name": "Prof. Kavyashri N P", "sched": {"Mon": ["3C1: DS Lab", "3C1: DS Lab", "D2:(L-403)-C Lab", "D2:(L-403)-C Lab", "", "", ""], "Tue": ["OS-C", "", "3B3: DS:Lab", "3B3: DS:Lab", "3C3: DS Lab", "3C3: DS Lab", ""], "Wed": ["", "OS-C", "", "", "", "", ""], "Thu": ["E-1 C lab", "E-1 C lab", "", "OS-C", "", "", ""], "Fri": ["", "OS-C", "G1:(L-402)-C lab", "G1:(L-402)-C lab", "", "", ""], "Sat": ["", "", "IDT-K", "IDT-K", "", "", ""]}}, {"name": "Prof. Kiran Kumar Bondhu", "sched": {"Mon": ["", "C-PROG-C", "C2::(L-402)-C Lab", "C2::(L-402)-C Lab", "E-2 CPL", "E-2 CPL", ""], "Tue": ["E3::(L-402):-C Lab", "E3::(L-402):-C Lab", "", "", "G2:(L-402)-C lab", "G2:(L-402)-C lab", ""], "Wed": ["G3:(L-402)", "G3:(L-402)", "", "", "C-PROG-B", "", ""], "Thu": ["F1:L-403):C Lab", "F1:L-403):C Lab", "", "C-PROG-B", "", "Mandatory patent", "Mandatory patent"], "Fri": ["", "", "C-PROG-C", "C-PROG-B", "", "C-PROG-C", ""], "Sat": ["C-PROG-C", "", "C-PROG-B", "", "Mandatory paper", "Mandatory paper", ""]}}, {"name": "Dr. Priti Badar", "sched": {"Mon": ["3C2: OOPS Lab", "3C2: OOPS Lab", "OOPS-C", "", "3A2 OOPS", "3A2 OOPS", ""], "Tue": ["3A3 OOPS lab", "3A3 OOPS lab", "", "OOPS-C", "3C1: OOPS", "3C1: OOPS", ""], "Wed": ["", "", "3A1:-OOPS lab", "3A1:-OOPS lab", "", "", ""], "Thu": ["3C3: OOPS lab", "3C3: OOPS lab", "", "", "", "", ""], "Fri": ["", "", "", "OOPS-C", "", "", ""], "Sat": ["", "", "", "OOPS-C", "", "", ""]}}, {"name": "Prof. Ayushi", "sched": {"Mon": ["C-Prog E", "", "C2::(L-402)-C Lab", "C2::(L-402)-C Lab", "", "", ""], "Tue": ["7C1:PC Lab", "7C1:PC Lab", "C-Prog E", "", "", "", ""], "Wed": ["7B1:-PC Lab", "7B1:-PC Lab", "", "", "TYl-FSD(ECE)", "", ""], "Thu": ["", "", "N2:(L506)-C Lab", "N2:(L506)-C Lab", "TYl-FSD(ECE)", "", ""], "Fri": ["P3 (506)-C Lab", "P3 (506)-C Lab", "", "C-Prog E", "7B2-PC Lab", "7B2-PC Lab", ""], "Sat": ["C-Prog E", "", "TYl-FSD(ECE)", "", "TYl-FSD(ECE)", "", ""]}}, {"name": "Prof. Anjali", "sched": {"Mon": ["", "AI-C", "", "", "PE", "", ""], "Tue": ["", "", "D3:(L-403)-C Lab", "D3:(L-403)-C Lab", "PE", "", "AI-C"], "Wed": ["", "", "A3:(L-402)-C Lab", "A3:(L-402)-C Lab", "PE", "", ""], "Thu": ["", "PE", "", "", "", "", ""], "Fri": ["", "AI-C", "H-1 C Lab", "H-1 C Lab", "", "", ""], "Sat": ["", "", "", "", "", "", "AI-C"]}}, {"name": "Prof. Bibi Annie Oommen", "sched": {"Mon": ["PC-A", "M-Patent", "PC-C", "M-Patent", "", "7A1:PC Lab", "7A1:PC Lab"], "Tue": ["7C1:PC Lab", "7C1:PC Lab", "PC-C", "", "", "7A3-PC Lab", "7A3-PC Lab"], "Wed": ["PC-A", "PC-A", "7C3-PC Lab", "7C3-PC Lab", "", "", ""], "Thu": ["PC-A", "", "PC-C", "PC-C", "", "", ""], "Fri": ["7A2: PC Lab", "7A2: PC Lab", "/ 7C2-PC Lab", "/ 7C2-PC Lab", "M-Paper", "M-Paper", ""], "Sat": ["", "", "", "", "", "", ""]}}, {"name": "Prof. Dhivya Kalaiselvan", "sched": {"Mon": ["", "SEPM-B", "", "SEPM-C", "M-Patent", "M-Patent", ""], "Tue": ["", "SEPM-B", "C3:(L-402)-C Lab", "C3:(L-402)-C Lab", "P2-C Lab", "P2-C Lab", ""], "Wed": ["SEPM-B", "", "A3:(L-402)-C Lab", "A3:(L-402)-C Lab", "SEPM-C", "", ""], "Thu": ["SEPM-C", "", "C1:C Lab", "C1:C Lab", "", "", ""], "Fri": ["B1:(L-403):C Lab", "B1:(L-403):C Lab", "O2:C LAb", "O2:C LAb", "SEPM-C", "", ""], "Sat": ["M-Paper", "M-Paper", "", "", "SEPM-B", "", ""]}}, {"name": "Prof. Smruthi Nair", "sched": {"Mon": ["", "DDCO-B", "DDCO-A", "", "M-PAPER", "M.PAPER", ""], "Tue": ["7C3-IOT Lab", "7C3-IOT Lab", "DDCO-A", "", "", "DDCO-B", ""], "Wed": ["7B3- IoT lab", "7B3- IoT lab", "7C2-IOT Lab", "7C2-IOT Lab", "", "", ""], "Thu": ["DDCO-B", "", "7B2-IOT Lab", "7B2-IOT Lab", "", "", ""], "Fri": ["7A1-IOT Lab", "7A1-IOT Lab", "7C1:-IOT Lab:", "7C1:-IOT Lab:", "", "DDCO-A", ""], "Sat": ["DDCO-A", "", "DDCO-B", "", "M.PATENT", "M.PATENT", ""]}}, {"name": "Prof. Kuruva Sree Sowmya", "sched": {"Mon": ["A2: (L-402):C lab", "A2: (L-402):C lab", "3B2:OOPS Lab", "3B2:OOPS Lab", "", "", ""], "Tue": ["C-PROG-G", "", "3B1:Oops Lab", "3B1:Oops Lab", "P2 (102)-C Lab", "P2 (102)-C Lab", ""], "Wed": ["C-PROG-F", "", "B3::(L-403):C Lab", "B3::(L-403):C Lab", "", "", ""], "Thu": ["", "C-PROG-G", "3B3:Oops Lab", "3B3:Oops Lab", "", "", ""], "Fri": ["C-PROG-G", "C-PROG-F", "C-PROG-F", "", "", "", ""], "Sat": ["C-PROG-F", "", "", "C-PROG-G", "", "", ""]}}, {"name": "Prof. Shilpa Shree", "sched": {"Mon": ["B2:(L-403)-C Lab", "B2:(L-403)-C Lab", "", "", "C-PROG-H", "", ""], "Tue": ["F2:(L-403)-C Lab", "F2:(L-403)-C Lab", "C3:(L-402)-C Lab", "C3:(L-402)-C Lab", "H2:(L-403)-C Lab", "H2:(L-403)-C Lab", ""], "Wed": ["H3::(L-403)-C Lab", "H3::(L-403)-C Lab", "B3::(L-403)-C Lab", "B3::(L-403)-C Lab", "C-PROG-H", "", ""], "Thu": ["", "C-PROG-H", "C1:(L-402) C Lab", "C1:(L-402) C Lab", "M.paper", "", ""], "Fri": ["B1:(L-403):C Lab", "B1:(L-403):C Lab", "O2:L(503)-C Lab", "O2:L(503)-C Lab", "M.patent", "M.patent", ""], "Sat": ["M.paper", "M.paper", "C-PROG-H", "", "", "", ""]}}, {"name": "Dr. Anitta", "sched": {"Mon": ["IOT-C", "", "", "DDCO-C", "", "7A1:PC Lab", "7A1:PC Lab"], "Tue": ["7C3-IOT Lab", "7C3-IOT Lab", "", "IOT-C", "", "7A3-PC Lab", "7A3-PC Lab"], "Wed": ["", "IOT-C", "7C2-IOT Lab", "7C2-IOT Lab", "", "", ""], "Thu": ["", "", "DDCO-C", "", "IOT-C", "", ""], "Fri": ["7A2: PC Lab", "7A2: PC Lab", "7C1:-IOT Lab", "7C1:-IOT Lab", "DDCO-C(Change)", "", ""], "Sat": ["", "DDCO-C", "", "", "", "", ""]}}, {"name": "Prof. Meghali Das", "sched": {"Mon": ["5A1: Web Lab", "5A1: Web Lab", "5B1: :Web Lab", "5B1: :Web Lab", "", "AI-A", ""], "Tue": ["AI-B", "", "5A3: :Web Lab", "5A3: :Web Lab", "", "5B3: Web lab", "5B3: Web lab"], "Wed": ["", "AI-A", "", "", "", "", ""], "Thu": ["5B2:Web Lab", "5B2:Web Lab", "AI-B", "Mandatory Paper", "", "", ""], "Fri": ["5A2: Web Lab", "5A2: Web Lab", "AI-B", "Mandatory Paper", "", "AI-A", ""], "Sat": ["AI-A", "", "Mandatory Patent", "Mandatory Patent", "", "AI-B", ""]}}, {"name": "Mr. s. Madhusmita Behera (NF1)", "sched": {"Mon": ["A2: (L-402):C lab", "A2: (L-402):C lab", "ICP-M", "", "", "Mandatory Patent=2 hours", "Mandatory Patent=2 hours"], "Tue": ["F2:(L-403)-C Lab", "F2:(L-403)-C Lab", "D3:(L-403)-C Lab", "D3:(L-403)-C Lab", "ICP-N", "", ""], "Wed": ["O3:(L-502)-C lab", "O3:(L-502)-C lab", "ICP-M", "", "ICP-N", "", ""], "Thu": ["", "", "", "", "ICP-N", "Mandatory Paper=2 hours", "Mandatory Paper=2 hours"], "Fri": ["A1:(L-402)-C Lab", "A1:(L-402)-C Lab", "", "ICP-M", "M2:(L-403):C Lab", "M2:(L-403):C Lab", ""], "Sat": ["", "ICP-M", "", "ICP-N", "", "", ""]}}, {"name": "Ms. Abhinaya (NF2)", "sched": {"Mon": ["ICP-O", "", "", "ICP-P", "F2:(L-403)-C Lab", "F2:(L-403)-C Lab", ""], "Tue": ["ICP-P", "", "M3 (002)::C Lab", "M3 (002)::C Lab", "G2 (402)-C Lab", "G2 (402)-C Lab", ""], "Wed": ["", "ICP-P", "N3 (505):C Lab", "N3 (505):C Lab", "ICP-O", "", ""], "Thu": ["", "", "N2-CPL", "N2-CPL", "ICP-O", "", ""], "Fri": ["A1:(L-402)-C Lab", "A1:(L-402)-C Lab", "", "ICP-P", "Mpatent", "Mpatent", ""], "Sat": ["ICP-O", "", "Mpaper", "Mpaper", "", "", ""]}}, {"name": "Ms. Sarada.T", "sched": {"Mon": ["3C3: PMG", "3C3: PMG", "3B3: PMG", "3B3: PMG", "", "5C3: Web Lab", "5C3: Web Lab"], "Tue": ["5C1 :Web Lab", "5C1 :Web Lab", "3B2: PMG", "3B2: PMG", "3C2: PMG:", "3C2: PMG:", ""], "Wed": ["5C2: Web Lab", "5C2: Web Lab", "TYL-FSD", "", "", "", ""], "Thu": ["3C1: PMG", "3C1: PMG", "3B1: PMG", "3B1: PMG", "TYL-FSD", "", ""], "Fri": ["", "", "", "", "", "", "TYL-FSD"], "Sat": ["", "", "TYL-FSD", "", "", "", ""]}}, {"name": "Mr. Prateek V Kumar", "sched": {"Mon": ["5A1: Web Lab", "5A1: Web Lab", "5B1: :Web Lab", "5B1: :Web Lab", "E2:(L-402)", "E2:(L-402)", ""], "Tue": ["", "", "5A3: Web Lab", "5A3: Web Lab", "", "5B3: Web Lab", "5B3: Web Lab"], "Wed": ["H3::(L-403)-C Lab", "H3::(L-403)-C Lab", "N3 (101):C Lab", "N3 (101):C Lab", "", "", ""], "Thu": ["5B2:Web Lab", "5B2:Web Lab", "N1:(L 505)-C lab", "N1:(L 505)-C lab", "", "", ""], "Fri": ["5A2: Web Lab", "5A2: Web Lab", "O1:(L-503)-C lab", "O1:(L-503)-C lab", "M1:(L-402)- C Lab", "M1:(L-402)- C Lab", ""], "Sat": ["", "", "", "", "", "", ""]}}, {"name": "Prof. Raghuram Mudumbi", "sched": {"Mon": ["", "", "", "PTR-A", "", "PTR-B", ""], "Tue": ["", "", "", "", "PTR-A", "", ""], "Wed": ["", "", "", "", "", "", ""], "Thu": ["", "", "", "", "", "", ""], "Fri": ["PTR-C", "", "", "", "", "", ""], "Sat": ["PTR-B", "", "", "", "PTR-C", "", ""]}}, {"name": "Prof. Apparsamy Perumal", "sched": {"Mon": ["", "", "", "", "PTR-C", "", ""], "Tue": ["", "", "", "PTR-B", "", "PTR-C", ""], "Wed": ["", "", "", "PTR-A", "", "", ""], "Thu": ["", "", "", "", "", "", ""], "Fri": ["", "", "", "", "", "PTR-B", ""], "Sat": ["", "", "", "PTR-A", "", "", ""]}}, {"name": "Dr. Ayyappa", "sched": {"Mon": ["", "", "J2", "J2", "", "", "EVS-B"], "Tue": ["L2", "L2", "", "", "P3", "P3", ""], "Wed": ["O2", "O2", "", "", "", "", ""], "Thu": ["", "", "N3", "N3", "", "", ""], "Fri": ["P1", "P1", "", "", "M3", "M3", ""], "Sat": ["", "", "", "", "EVS-A", "EVS-C", ""]}}, {"name": "Prof. Zaheed", "sched": {"Mon": ["Cprog D", "", "Cprog A", "", "", "", ""], "Tue": ["E3-CPL", "E3-CPL", "M3 (002):C Lab", "M3 (002):C Lab", "Cprog A", "", ""], "Wed": ["Cprog D", "", "", "", "", "", ""], "Thu": ["F1-CPL", "F1-CPL", "D1-CPL", "D1-CPL", "Cprog D", "", ""], "Fri": ["P3-CPL", "P3-CPL", "Cprog A", "", "M 1-CPL", "M 1-CPL", ""], "Sat": ["", "", "Cprog D", "Cprog A", "", "", ""]}}, {"name": "Prof. Thushara", "sched": {"Mon": ["RMIPR-C", "", "3B3:PMG", "3B3:PMG", "3A2 OOPS LAb", "3A2 OOPS LAb", ""], "Tue": ["3A3 OOPS LAb", "3A3 OOPS LAb", "3B2: PMG", "3B2: PMG", "", "3C1: OOPS", "3C1: OOPS"], "Wed": ["O3:(L-502) C Lab", "O3:(L-502) C Lab", "3A2:-PMG", "3A2:-PMG", "", "", ""], "Thu": ["", "", "", "", "", "", ""], "Fri": ["", "RMIPR-B", "H1-C-Lab", "H1-C-Lab", "M2:(L-403):C Lab", "M2:(L-403):C Lab", ""], "Sat": ["", "", "", "RMIPR-C", "", "", "RMIPR-B"]}}, {"name": "Prof. Maths", "sched": {"Mon": ["RMIPR", "", "", "PDS -A", "PDS-C", "", ""], "Tue": ["PDS-B", "", "", "", "", "PDS -A", ""], "Wed": ["RMIPR", "", "", "PDS-C", "", "", ""], "Thu": ["", "PDS-B", "", "PDS -A", "", "", ""], "Fri": ["", "PDS -A", "PDS-B", "RMIPR", "", "PDS-C", ""], "Sat": ["", "", "PDS-C", "PDS-B", "", "", ""]}}]};
-const FULL={Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday'};
-const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function fill(sel,ph,items){sel.innerHTML='<option value="">'+ph+'</option>'+items.map(([v,t])=>`<option value="${esc(v)}">${esc(t)}</option>`).join('');sel.value=''}
-fill($('lec'),'-- Select lecturer --',DATA.staff.map((s,i)=>[i,s.name]));
-fill($('day'),'-- Select day --',DATA.days.map(d=>[d,FULL[d]]));
-fill($('tm'),'-- Select time --',[['all','All Day'],...DATA.slots.map((s,i)=>[i,s])]);
-const shortSlot=s=>s.replace(/\s*(AM|PM)$/,'');
-function head(sel){return '<tr><th>Staff</th>'+DATA.slots.map((s,i)=>`<th class="${sel.includes(i)?'sel':''}">${esc(s)}</th>`).join('')+'</tr>'}
-function render(){
-  const l=$('lec').value,day=$('day').value,tm=$('tm').value;
-  if(l===''||day===''||tm===''){$('out').innerHTML='<div class="card empty">Select a lecturer, day and time to see the backup options.</div>';return}
-  const me=DATA.staff[+l];
-  const sel=tm==='all'?DATA.slots.map((_,i)=>i):[+tm];
-  const mine=me.sched[day];
-  let h=`<div class="card"><h2>1) Your schedule on the day is: ${FULL[day].toUpperCase()}</h2><div class="tw"><table><tr><th>Day</th>${DATA.slots.map((s,i)=>`<th class="${sel.includes(i)?'sel':''}">${esc(s)}</th>`).join('')}</tr>`+
-   `<tr><td class="nm">${esc(me.name)}<br><small>${FULL[day]}</small></td>${mine.map((c,i)=>`<td class="${c?'busy':'free'} ${sel.includes(i)?'sel':''}">${c?esc(c):'Free'}</td>`).join('')}</tr></table></div>`+
-   `<p class="note">Highlighted columns are the periods that need cover.</p></div>`;
-  const rows=DATA.staff.map((s,i)=>({s,i})).filter(x=>x.i!==+l).map(x=>{
-    const p=x.s.sched[day];const free=sel.filter(j=>!p[j]).length;return {...x,p,free,all:free===sel.length}});
-  rows.sort((a,b)=>b.free-a.free||a.s.name.localeCompare(b.s.name));
-  const nAll=rows.filter(r=>r.all).length;
-  h+=`<div class="card"><h2>2) The following staff can back you up (${FULL[day]}, ${tm==='all'?'All Day':esc(DATA.slots[+tm])})</h2><div class="tw"><table>${head(sel)}`+
-   rows.map(r=>`<tr><td class="nm">${esc(r.s.name)}${r.all?'<span class="tag">Free for all requested</span>':`<span class="tag no">Free ${r.free}/${sel.length}</span>`}</td>`+
-   r.p.map((c,j)=>`<td class="${c?'busy':'free'} ${sel.includes(j)?'sel':''}">${c?esc(c):'Free'}</td>`).join('')+'</tr>').join('')+
-   `</table></div><p class="note">${nAll} staff are free for the whole requested time. Staff are sorted by most free periods in the requested slot. Entries such as R, C, P Load, M.Patent are non-class duties from the timetable; they are shown as busy.</p></div>`;
-  $('out').innerHTML=h;
-}
-['lec','day','tm'].forEach(id=>$(id).addEventListener('change',render));
+const DATA = {"periods":[["P1","08:00 - 09:00 AM"],["P2","09:00 - 10:00 AM"],["P3","10:20 - 11:20 AM"],["P4","11:20 - 12:20 PM"],["P5","01:00 - 02:00 PM"],["P6","02:00 - 03:00 PM"],["P7","03:00 - 04:00 PM"]],"cells":[{"kind":"class","name":"Theory of Computation","sem":"5","secs":["B"],"secText":"B"},{"kind":"class","name":"Data Structures Lab","sem":"3","secs":["B"],"secText":"B (Batch 1)"},{"kind":"duty","name":"Research load"},{"kind":"class","name":"Theory of Computation","sem":"5","secs":["A"],"secText":"A"},{"kind":"duty","name":"Consultancy load"},{"kind":"class","name":"Data Structures Lab","sem":"3","secs":["A"],"secText":"A (Batch 3)"},{"kind":"duty","name":"Mandatory patent time"},{"kind":"class","name":"Data Structures Lab","sem":"3","secs":["C"],"secText":"C (Batch 2)"},{"kind":"duty","name":"Mandatory paper time"},{"kind":"class","name":"Project Management with Git Lab","sem":"3","secs":["C"],"secText":"C (Batch 3)"},{"kind":"duty","name":"Innovation/Projects load"},{"kind":"class","name":"Web Technology Lab","sem":"5","secs":["C"],"secText":"C (Batch 3)"},{"kind":"class","name":"Web Technology Lab","sem":"5","secs":["C"],"secText":"C (Batch 1)"},{"kind":"class","name":"Theory of Computation","sem":"5","secs":["C"],"secText":"C"},{"kind":"class","name":"Project Management with Git Lab","sem":"3","secs":["C"],"secText":"C (Batch 2)"},{"kind":"class","name":"Web Technology Lab","sem":"5","secs":["C"],"secText":"C (Batch 2)"},{"kind":"class","name":"Project Management with Git Lab","sem":"3","secs":["C"],"secText":"C (Batch 1)"},{"kind":"duty","name":"DRC work"},{"kind":"class","name":"Object Oriented Programming with Java","sem":"3","secs":["A"],"secText":"A"},{"kind":"class","name":"DBMS (ECE)","sem":"7","secs":["A","B","C","D"],"secText":"A, B, C, D (ECE)"},{"kind":"duty","name":"Entrepreneurship load"},{"kind":"class","name":"Data Structures and Applications","sem":"3","secs":["A"],"secText":"A"},{"kind":"class","name":"Data Structures Lab","sem":"3","secs":["A"],"secText":"A (Batch 1)"},{"kind":"class","name":"Data Structures Lab","sem":"3","secs":["A"],"secText":"A (Batch 2)"},{"kind":"class","name":"Natural Language Processing","sem":"7","secs":["A","B","C"],"secText":"A, B, C"},{"kind":"class","name":"Agentic AI (TYL)","sem":"5","secs":["A"],"secText":"A"},{"kind":"class","name":"Internet of Things","sem":"7","secs":["A"],"secText":"A"},{"kind":"class","name":"IoT Lab","sem":"7","secs":["A"],"secText":"A (Batch 3)"},{"kind":"class","name":"IoT Lab","sem":"7","secs":["A"],"secText":"A (Batch 2)"},{"kind":"class","name":"Parallel Computing Lab","sem":"7","secs":["C"],"secText":"C (Batch 3)"},{"kind":"class","name":"Parallel Computing Lab","sem":"7","secs":["B"],"secText":"B (Batch 3)"},{"kind":"class","name":"Parallel Computing Lab","sem":"7","secs":["C"],"secText":"C (Batch 2)"},{"kind":"class","name":"IoT Lab","sem":"7","secs":["B"],"secText":"B (Batch 1)"},{"kind":"class","name":"IoT Lab","sem":"7","secs":["A"],"secText":"A (Batch 1)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["D"],"secText":"D (Batch 2)"},{"kind":"class","name":"Operating Systems","sem":"3","secs":["B"],"secText":"B"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["H"],"secText":"H (Batch 2)"},{"kind":"class","name":"Operating Systems","sem":"3","secs":["A"],"secText":"A"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["N"],"secText":"N (Batch 1)"},{"kind":"class","name":"Data Structures and Applications","sem":"3","secs":["B"],"secText":"B"},{"kind":"class","name":"Data Structures Lab","sem":"3","secs":["B"],"secText":"B (Batch 3)"},{"kind":"class","name":"Data Structures Lab","sem":"3","secs":["B"],"secText":"B (Batch 2)"},{"kind":"class","name":"Cryptography & Network Security","sem":"7","secs":["C"],"secText":"C"},{"kind":"class","name":"Computer Networks Lab","sem":"5","secs":["C"],"secText":"C (Batch 1)"},{"kind":"class","name":"Computer Networks Lab","sem":"5","secs":["C"],"secText":"C (Batch 2)"},{"kind":"class","name":"Computer Networks","sem":"5","secs":["C"],"secText":"C"},{"kind":"class","name":"Computer Networks Lab","sem":"5","secs":["C"],"secText":"C (Batch 3)"},{"kind":"class","name":"Internet of Things","sem":"7","secs":["B"],"secText":"B"},{"kind":"class","name":"Computer Networks Lab","sem":"5","secs":["B"],"secText":"B (Batch 3)"},{"kind":"class","name":"Computer Networks Lab","sem":"5","secs":["B"],"secText":"B (Batch 2)"},{"kind":"class","name":"IoT Lab","sem":"7","secs":["B"],"secText":"B (Batch 3)"},{"kind":"class","name":"IoT Lab","sem":"7","secs":["B"],"secText":"B (Batch 2)"},{"kind":"class","name":"Object Oriented Programming with Java","sem":"3","secs":["B"],"secText":"B"},{"kind":"class","name":"OOPS Lab","sem":"3","secs":["B"],"secText":"B (Batch 2)"},{"kind":"class","name":"Research Methodology and IPR","sem":"5","secs":["A"],"secText":"A"},{"kind":"class","name":"OOPS Lab","sem":"3","secs":["B"],"secText":"B (Batch 1)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["P"],"secText":"P (Batch 1)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["E"],"secText":"E (Batch 1)"},{"kind":"class","name":"OOPS Lab","sem":"3","secs":["B"],"secText":"B (Batch 3)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["O"],"secText":"O (Batch 1)"},{"kind":"class","name":"Data Structures Lab","sem":"3","secs":["C"],"secText":"C (Batch 1)"},{"kind":"class","name":"Data Structures and Applications","sem":"3","secs":["C"],"secText":"C"},{"kind":"class","name":"Data Structures Lab","sem":"3","secs":["C"],"secText":"C (Batch 3)"},{"kind":"class","name":"OOPS Lab","sem":"3","secs":["C"],"secText":"C (Batch 2)"},{"kind":"class","name":"Parallel Computing","sem":"7","secs":["B"],"secText":"B"},{"kind":"class","name":"Parallel Computing Lab","sem":"7","secs":["B"],"secText":"B (Batch 1)"},{"kind":"class","name":"OOPS Lab","sem":"3","secs":["A"],"secText":"A (Batch 1)"},{"kind":"class","name":"OOPS Lab","sem":"3","secs":["C"],"secText":"C (Batch 3)"},{"kind":"class","name":"Parallel Computing Lab","sem":"7","secs":["B"],"secText":"B (Batch 2)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["B"],"secText":"B (Batch 2)"},{"kind":"class","name":"Project Management with Git Lab","sem":"3","secs":["A"],"secText":"A (Batch 3)"},{"kind":"class","name":"Project Management with Git Lab","sem":"3","secs":["A"],"secText":"A (Batch 1)"},{"kind":"class","name":"Project Management with Git Lab","sem":"3","secs":["A"],"secText":"A (Batch 2)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["D"],"secText":"D (Batch 1)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["G"],"secText":"G (Batch 1)"},{"kind":"class","name":"Innovation & Design Thinking","sem":"1","secs":["J"],"secText":"J"},{"kind":"class","name":"Innovation & Design Thinking","sem":"1","secs":["I"],"secText":"I"},{"kind":"class","name":"Software Engineering & Project Management","sem":"5","secs":["A"],"secText":"A"},{"kind":"class","name":"Project Management with Git Lab","sem":"3","secs":["B"],"secText":"B (Batch 1)"},{"kind":"class","name":"Computer Networks Lab","sem":"5","secs":["A"],"secText":"A (Batch 3)"},{"kind":"class","name":"Computer Networks","sem":"5","secs":["B"],"secText":"B"},{"kind":"class","name":"Computer Networks Lab","sem":"5","secs":["A"],"secText":"A (Batch 2)"},{"kind":"class","name":"Computer Networks Lab","sem":"5","secs":["B"],"secText":"B (Batch 1)"},{"kind":"class","name":"Computer Networks Lab","sem":"5","secs":["A"],"secText":"A (Batch 1)"},{"kind":"class","name":"Computer Networks","sem":"5","secs":["A"],"secText":"A"},{"kind":"class","name":"Cryptography & Network Security","sem":"7","secs":["B"],"secText":"B"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["F"],"secText":"F (Batch 2)"},{"kind":"class","name":"Cryptography & Network Security","sem":"7","secs":["A"],"secText":"A"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["G"],"secText":"G (Batch 3)"},{"kind":"class","name":"Operating Systems","sem":"3","secs":["C"],"secText":"C"},{"kind":"class","name":"Innovation & Design Thinking","sem":"1","secs":["K"],"secText":"K"},{"kind":"class","name":"Programming in C","sem":"1","secs":["C"],"secText":"C"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["C"],"secText":"C (Batch 2)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["E"],"secText":"E (Batch 2)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["E"],"secText":"E (Batch 3)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["G"],"secText":"G (Batch 2)"},{"kind":"class","name":"Programming in C","sem":"1","secs":["B"],"secText":"B"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["F"],"secText":"F (Batch 1)"},{"kind":"class","name":"Object Oriented Programming with Java","sem":"3","secs":["C"],"secText":"C"},{"kind":"class","name":"OOPS Lab","sem":"3","secs":["A"],"secText":"A (Batch 2)"},{"kind":"class","name":"OOPS Lab","sem":"3","secs":["A"],"secText":"A (Batch 3)"},{"kind":"class","name":"OOPS Lab","sem":"3","secs":["C"],"secText":"C (Batch 1)"},{"kind":"class","name":"Programming in C","sem":"1","secs":["E"],"secText":"E"},{"kind":"class","name":"Parallel Computing Lab","sem":"7","secs":["C"],"secText":"C (Batch 1)"},{"kind":"class","name":"Full Stack Development (TYL, ECE)","sem":"","secs":[],"secText":"\u2014"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["N"],"secText":"N (Batch 2)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["P"],"secText":"P (Batch 3)"},{"kind":"class","name":"Artificial Intelligence","sem":"5","secs":["C"],"secText":"C"},{"kind":"class","name":"Big Data Analytics","sem":"7","secs":["A","B","C"],"secText":"A, B, C"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["D"],"secText":"D (Batch 3)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["A"],"secText":"A (Batch 3)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["H"],"secText":"H (Batch 1)"},{"kind":"class","name":"Parallel Computing","sem":"7","secs":["A"],"secText":"A"},{"kind":"class","name":"Parallel Computing","sem":"7","secs":["C"],"secText":"C"},{"kind":"class","name":"Parallel Computing Lab","sem":"7","secs":["A"],"secText":"A (Batch 1)"},{"kind":"class","name":"Parallel Computing Lab","sem":"7","secs":["A"],"secText":"A (Batch 3)"},{"kind":"class","name":"Parallel Computing Lab","sem":"7","secs":["A"],"secText":"A (Batch 2)"},{"kind":"class","name":"Software Engineering & Project Management","sem":"5","secs":["B"],"secText":"B"},{"kind":"class","name":"Software Engineering & Project Management","sem":"5","secs":["C"],"secText":"C"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["C"],"secText":"C (Batch 3)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["P"],"secText":"P (Batch 2)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["C"],"secText":"C (Batch 1)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["B"],"secText":"B (Batch 1)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["O"],"secText":"O (Batch 2)"},{"kind":"class","name":"Digital Design and Computer Organization","sem":"3","secs":["B"],"secText":"B"},{"kind":"class","name":"Digital Design and Computer Organization","sem":"3","secs":["A"],"secText":"A"},{"kind":"class","name":"IoT Lab","sem":"7","secs":["C"],"secText":"C (Batch 3)"},{"kind":"class","name":"IoT Lab","sem":"7","secs":["C"],"secText":"C (Batch 2)"},{"kind":"class","name":"IoT Lab","sem":"7","secs":["C"],"secText":"C (Batch 1)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["A"],"secText":"A (Batch 2)"},{"kind":"class","name":"Programming in C","sem":"1","secs":["G"],"secText":"G"},{"kind":"class","name":"Programming in C","sem":"1","secs":["F"],"secText":"F"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["B"],"secText":"B (Batch 3)"},{"kind":"class","name":"Programming in C","sem":"1","secs":["H"],"secText":"H"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["H"],"secText":"H (Batch 3)"},{"kind":"class","name":"Internet of Things","sem":"7","secs":["C"],"secText":"C"},{"kind":"class","name":"Digital Design and Computer Organization","sem":"3","secs":["C"],"secText":"C"},{"kind":"class","name":"Web Technology Lab","sem":"5","secs":["A"],"secText":"A (Batch 1)"},{"kind":"class","name":"Web Technology Lab","sem":"5","secs":["B"],"secText":"B (Batch 1)"},{"kind":"class","name":"Artificial Intelligence","sem":"5","secs":["A"],"secText":"A"},{"kind":"class","name":"Artificial Intelligence","sem":"5","secs":["B"],"secText":"B"},{"kind":"class","name":"Web Technology Lab","sem":"5","secs":["A"],"secText":"A (Batch 3)"},{"kind":"class","name":"Web Technology Lab","sem":"5","secs":["B"],"secText":"B (Batch 3)"},{"kind":"class","name":"Web Technology Lab","sem":"5","secs":["B"],"secText":"B (Batch 2)"},{"kind":"class","name":"Web Technology Lab","sem":"5","secs":["A"],"secText":"A (Batch 2)"},{"kind":"class","name":"Programming in C","sem":"1","secs":["M"],"secText":"M"},{"kind":"class","name":"Programming in C","sem":"1","secs":["N"],"secText":"N"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["O"],"secText":"O (Batch 3)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["A"],"secText":"A (Batch 1)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["M"],"secText":"M (Batch 2)"},{"kind":"class","name":"Programming in C","sem":"1","secs":["O"],"secText":"O"},{"kind":"class","name":"Programming in C","sem":"1","secs":["P"],"secText":"P"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["M"],"secText":"M (Batch 3)"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["N"],"secText":"N (Batch 3)"},{"kind":"class","name":"Project Management with Git Lab","sem":"3","secs":["B"],"secText":"B (Batch 3)"},{"kind":"class","name":"Project Management with Git Lab","sem":"3","secs":["B"],"secText":"B (Batch 2)"},{"kind":"class","name":"Full Stack Development (TYL, CSE)","sem":"","secs":[],"secText":"\u2014"},{"kind":"class","name":"C Programming Lab","sem":"1","secs":["M"],"secText":"M (Batch 1)"},{"kind":"class","name":"PTR","sem":"5","secs":["A"],"secText":"A"},{"kind":"class","name":"PTR","sem":"5","secs":["B"],"secText":"B"},{"kind":"class","name":"PTR","sem":"5","secs":["C"],"secText":"C"},{"kind":"class","name":"Lab (subject not stated in timetable)","sem":"1","secs":["J"],"secText":"J (Batch 2)"},{"kind":"class","name":"Environmental Studies","sem":"5","secs":["B"],"secText":"B"},{"kind":"class","name":"Lab (subject not stated in timetable)","sem":"1","secs":["L"],"secText":"L (Batch 2)"},{"kind":"class","name":"Lab (subject not stated in timetable)","sem":"1","secs":["P"],"secText":"P (Batch 3)"},{"kind":"class","name":"Lab (subject not stated in timetable)","sem":"1","secs":["O"],"secText":"O (Batch 2)"},{"kind":"class","name":"Lab (subject not stated in timetable)","sem":"1","secs":["N"],"secText":"N (Batch 3)"},{"kind":"class","name":"Lab (subject not stated in timetable)","sem":"1","secs":["P"],"secText":"P (Batch 1)"},{"kind":"class","name":"Lab (subject not stated in timetable)","sem":"1","secs":["M"],"secText":"M (Batch 3)"},{"kind":"class","name":"Environmental Studies","sem":"5","secs":["A"],"secText":"A"},{"kind":"class","name":"Environmental Studies","sem":"5","secs":["C"],"secText":"C"},{"kind":"class","name":"Programming in C","sem":"1","secs":["D"],"secText":"D"},{"kind":"class","name":"Programming in C","sem":"1","secs":["A"],"secText":"A"},{"kind":"class","name":"Research Methodology and IPR","sem":"5","secs":["C"],"secText":"C"},{"kind":"class","name":"Research Methodology and IPR","sem":"5","secs":["B"],"secText":"B"},{"kind":"class","name":"Research Methodology and IPR","sem":"5","secs":[],"secText":"\u2014"},{"kind":"class","name":"Probability, Distributions and Statistics","sem":"3","secs":["A"],"secText":"A"},{"kind":"class","name":"Probability, Distributions and Statistics","sem":"3","secs":["C"],"secText":"C"},{"kind":"class","name":"Probability, Distributions and Statistics","sem":"3","secs":["B"],"secText":"B"}],"staff":[{"name":"Dr. Prem Kumar Ramesh","sched":{"Mon":[-1,-1,-1,-1,-1,-1,-1],"Tue":[-1,-1,-1,-1,-1,-1,-1],"Wed":[-1,-1,-1,-1,-1,-1,-1],"Thu":[-1,-1,-1,-1,-1,-1,-1],"Fri":[-1,-1,-1,-1,-1,-1,-1],"Sat":[-1,-1,-1,-1,-1,-1,-1]}},{"name":"Dr. Sagarika Behera","sched":{"Mon":[0,-1,1,1,-1,2,2],"Tue":[3,-1,0,-1,4,4,4],"Wed":[-1,0,5,5,-1,6,6],"Thu":[7,7,3,-1,-1,-1,-1],"Fri":[-1,-1,3,-1,0,-1,-1],"Sat":[-1,3,-1,-1,8,8,-1]}},{"name":"Dr. Preethi Sheba Hepsiba","sched":{"Mon":[9,9,10,-1,-1,11,11],"Tue":[12,12,-1,13,14,14,-1],"Wed":[15,15,-1,-1,6,-1,-1],"Thu":[16,16,13,-1,6,-1,-1],"Fri":[-1,-1,13,-1,8,8,-1],"Sat":[-1,13,4,4,2,2,-1]}},{"name":"Dr. Sanchari Saha","sched":{"Mon":[17,18,19,17,10,8,8],"Tue":[17,17,19,17,2,2,2],"Wed":[17,17,6,6,2,-1,-1],"Thu":[18,17,19,17,4,-1,-1],"Fri":[18,17,17,19,10,10,17],"Sat":[20,20,17,18,4,4,4]}},{"name":"Dr. Manju V N","sched":{"Mon":[21,-1,-1,-1,22,22,-1],"Tue":[23,23,-1,21,-1,-1,-1],"Wed":[-1,-1,5,5,-1,-1,-1],"Thu":[-1,-1,-1,-1,-1,-1,-1],"Fri":[-1,-1,-1,21,-1,-1,-1],"Sat":[-1,21,-1,-1,-1,-1,-1]}},{"name":"Dr. Sumathi D","sched":{"Mon":[-1,-1,-1,-1,24,-1,-1],"Tue":[-1,-1,-1,-1,24,-1,-1],"Wed":[-1,-1,25,-1,24,-1,-1],"Thu":[-1,24,-1,-1,25,-1,-1],"Fri":[-1,-1,-1,-1,-1,-1,25],"Sat":[-1,-1,25,-1,-1,-1,-1]}},{"name":"Dr. Sreedevi N","sched":{"Mon":[-1,26,26,-1,-1,27,27],"Tue":[-1,26,-1,26,-1,28,28],"Wed":[8,8,29,29,-1,2,2],"Thu":[-1,-1,30,30,-1,2,2],"Fri":[4,4,31,31,32,32,-1],"Sat":[-1,-1,6,6,-1,-1,-1]}},{"name":"Prof. Savitha N J","sched":{"Mon":[6,6,2,2,24,27,27],"Tue":[8,8,2,2,24,28,28],"Wed":[2,2,-1,-1,24,-1,-1],"Thu":[-1,24,10,20,-1,-1,-1],"Fri":[33,33,-1,-1,32,32,-1],"Sat":[-1,-1,-1,-1,-1,-1,-1]}},{"name":"Prof. Smitha N","sched":{"Mon":[8,8,34,34,10,20,35],"Tue":[-1,35,2,2,36,36,-1],"Wed":[37,-1,-1,35,-1,-1,-1],"Thu":[-1,37,38,38,-1,-1,-1],"Fri":[35,-1,37,-1,-1,6,6],"Sat":[-1,-1,37,-1,2,2,-1]}},{"name":"Prof. Navaneetha","sched":{"Mon":[-1,-1,1,1,39,-1,-1],"Tue":[-1,-1,40,40,-1,-1,-1],"Wed":[39,-1,-1,-1,-1,-1,-1],"Thu":[-1,-1,41,41,-1,-1,-1],"Fri":[-1,-1,-1,39,-1,-1,-1],"Sat":[-1,39,-1,-1,-1,-1,-1]}},{"name":"Prof. Krishna Sowjanya K","sched":{"Mon":[-1,42,-1,-1,2,43,43],"Tue":[44,44,45,-1,-1,42,-1],"Wed":[46,46,-1,-1,2,6,6],"Thu":[42,-1,-1,45,-1,-1,-1],"Fri":[-1,42,-1,45,8,8,-1],"Sat":[45,-1,-1,-1,-1,-1,-1]}},{"name":"Prof. Paramita Mitra","sched":{"Mon":[47,2,48,48,8,8,2],"Tue":[44,44,47,2,10,49,49],"Wed":[50,50,2,47,10,-1,-1],"Thu":[6,6,51,51,10,-1,-1],"Fri":[4,47,8,8,32,32,4],"Sat":[2,2,6,6,8,8,2]}},{"name":"Prof. Manjula Subramaniam","sched":{"Mon":[52,-1,53,53,-1,-1,54],"Tue":[-1,-1,55,55,56,56,-1],"Wed":[-1,52,-1,-1,8,-1,-1],"Thu":[57,57,58,58,8,-1,-1],"Fri":[-1,-1,59,59,52,2,2],"Sat":[52,-1,6,6,-1,54,-1]}},{"name":"Prof. Rajini Tiwari","sched":{"Mon":[60,60,-1,-1,22,22,-1],"Tue":[23,23,61,-1,62,62,-1],"Wed":[61,-1,-1,-1,-1,-1,-1],"Thu":[7,7,41,41,-1,-1,-1],"Fri":[-1,-1,61,-1,-1,-1,-1],"Sat":[61,-1,-1,-1,-1,-1,-1]}},{"name":"Prof. Ann Mathews","sched":{"Mon":[63,63,-1,64,-1,-1,-1],"Tue":[64,-1,-1,-1,-1,-1,-1],"Wed":[65,65,66,66,-1,-1,-1],"Thu":[67,67,30,30,64,-1,-1],"Fri":[-1,-1,64,-1,68,68,-1],"Sat":[-1,-1,-1,-1,-1,-1,-1]}},{"name":"Prof. Lynsha Pratheeba","sched":{"Mon":[69,69,-1,-1,70,70,-1],"Tue":[71,71,-1,-1,-1,-1,-1],"Wed":[-1,-1,72,72,-1,-1,-1],"Thu":[-1,-1,73,73,-1,-1,-1],"Fri":[-1,-1,74,74,75,75,-1],"Sat":[-1,-1,76,76,-1,-1,-1]}},{"name":"Prof. Rajeshwari","sched":{"Mon":[-1,-1,77,-1,70,70,-1],"Tue":[71,71,20,20,-1,-1,77],"Wed":[8,8,25,-1,6,6,-1],"Thu":[77,-1,78,78,25,-1,-1],"Fri":[2,2,-1,-1,-1,-1,25],"Sat":[10,10,25,-1,-1,-1,77]}},{"name":"Prof. Ranjini K","sched":{"Mon":[79,79,48,48,80,-1,-1],"Tue":[-1,-1,81,81,-1,49,49],"Wed":[-1,-1,-1,80,-1,-1,-1],"Thu":[82,82,-1,-1,-1,-1,-1],"Fri":[83,83,-1,80,-1,-1,-1],"Sat":[-1,-1,-1,80,-1,-1,-1]}},{"name":"Prof. Pooja Goud","sched":{"Mon":[79,79,-1,-1,84,43,43],"Tue":[-1,-1,81,81,-1,84,-1],"Wed":[46,46,-1,-1,-1,-1,-1],"Thu":[82,82,-1,84,-1,-1,-1],"Fri":[83,83,-1,84,-1,-1,-1],"Sat":[-1,-1,-1,-1,-1,-1,-1]}},{"name":"Prof. Reshma","sched":{"Mon":[-1,85,-1,-1,86,86,-1],"Tue":[-1,-1,87,85,56,56,-1],"Wed":[88,88,-1,87,2,2,2],"Thu":[85,-1,-1,87,8,8,8],"Fri":[85,-1,87,-1,6,-1,-1],"Sat":[20,20,20,20,-1,-1,-1]}},{"name":"Prof. Kavyashri N P","sched":{"Mon":[60,60,34,34,-1,-1,-1],"Tue":[89,-1,40,40,62,62,-1],"Wed":[-1,89,-1,-1,-1,-1,-1],"Thu":[57,57,-1,89,-1,-1,-1],"Fri":[-1,89,74,74,-1,-1,-1],"Sat":[-1,-1,90,90,-1,-1,-1]}},{"name":"Prof. Kiran Kumar Bondhu","sched":{"Mon":[-1,91,92,92,93,93,-1],"Tue":[94,94,-1,-1,95,95,-1],"Wed":[88,88,-1,-1,96,-1,-1],"Thu":[97,97,-1,96,-1,6,6],"Fri":[-1,-1,91,96,-1,91,-1],"Sat":[91,-1,96,-1,8,8,-1]}},{"name":"Dr. Priti Badar","sched":{"Mon":[63,63,98,-1,99,99,-1],"Tue":[100,100,-1,98,101,101,-1],"Wed":[-1,-1,66,66,-1,-1,-1],"Thu":[67,67,-1,-1,-1,-1,-1],"Fri":[-1,-1,-1,98,-1,-1,-1],"Sat":[-1,-1,-1,98,-1,-1,-1]}},{"name":"Prof. Ayushi","sched":{"Mon":[102,-1,92,92,-1,-1,-1],"Tue":[103,103,102,-1,-1,-1,-1],"Wed":[65,65,-1,-1,104,-1,-1],"Thu":[-1,-1,105,105,104,-1,-1],"Fri":[106,106,-1,102,68,68,-1],"Sat":[102,-1,104,-1,104,-1,-1]}},{"name":"Prof. Anjali","sched":{"Mon":[-1,107,-1,-1,108,-1,-1],"Tue":[-1,-1,109,109,108,-1,107],"Wed":[-1,-1,110,110,108,-1,-1],"Thu":[-1,108,-1,-1,-1,-1,-1],"Fri":[-1,107,111,111,-1,-1,-1],"Sat":[-1,-1,-1,-1,-1,-1,107]}},{"name":"Prof. Bibi Annie Oommen","sched":{"Mon":[112,6,113,6,-1,114,114],"Tue":[103,103,113,-1,-1,115,115],"Wed":[112,112,29,29,-1,-1,-1],"Thu":[112,-1,113,113,-1,-1,-1],"Fri":[116,116,31,31,8,8,-1],"Sat":[-1,-1,-1,-1,-1,-1,-1]}},{"name":"Prof. Dhivya Kalaiselvan","sched":{"Mon":[-1,117,-1,118,6,6,-1],"Tue":[-1,117,119,119,120,120,-1],"Wed":[117,-1,110,110,118,-1,-1],"Thu":[118,-1,121,121,-1,-1,-1],"Fri":[122,122,123,123,118,-1,-1],"Sat":[8,8,-1,-1,117,-1,-1]}},{"name":"Prof. Smruthi Nair","sched":{"Mon":[-1,124,125,-1,8,8,-1],"Tue":[126,126,125,-1,-1,124,-1],"Wed":[50,50,127,127,-1,-1,-1],"Thu":[124,-1,51,51,-1,-1,-1],"Fri":[33,33,128,128,-1,125,-1],"Sat":[125,-1,124,-1,6,6,-1]}},{"name":"Prof. Kuruva Sree Sowmya","sched":{"Mon":[129,129,53,53,-1,-1,-1],"Tue":[130,-1,55,55,120,120,-1],"Wed":[131,-1,132,132,-1,-1,-1],"Thu":[-1,130,58,58,-1,-1,-1],"Fri":[130,131,131,-1,-1,-1,-1],"Sat":[131,-1,-1,130,-1,-1,-1]}},{"name":"Prof. Shilpa Shree","sched":{"Mon":[69,69,-1,-1,133,-1,-1],"Tue":[86,86,119,119,36,36,-1],"Wed":[134,134,132,132,133,-1,-1],"Thu":[-1,133,121,121,8,-1,-1],"Fri":[122,122,123,123,6,6,-1],"Sat":[8,8,133,-1,-1,-1,-1]}},{"name":"Dr. Anitta","sched":{"Mon":[135,-1,-1,136,-1,114,114],"Tue":[126,126,-1,135,-1,115,115],"Wed":[-1,135,127,127,-1,-1,-1],"Thu":[-1,-1,136,-1,135,-1,-1],"Fri":[116,116,128,128,136,-1,-1],"Sat":[-1,136,-1,-1,-1,-1,-1]}},{"name":"Prof. Meghali Das","sched":{"Mon":[137,137,138,138,-1,139,-1],"Tue":[140,-1,141,141,-1,142,142],"Wed":[-1,139,-1,-1,-1,-1,-1],"Thu":[143,143,140,8,-1,-1,-1],"Fri":[144,144,140,8,-1,139,-1],"Sat":[139,-1,6,6,-1,140,-1]}},{"name":"Mrs. Madhusmita Behera (NF1)","sched":{"Mon":[129,129,145,-1,-1,6,6],"Tue":[86,86,109,109,146,-1,-1],"Wed":[147,147,145,-1,146,-1,-1],"Thu":[-1,-1,-1,-1,146,8,8],"Fri":[148,148,-1,145,149,149,-1],"Sat":[-1,145,-1,146,-1,-1,-1]}},{"name":"Ms. Abhinaya (NF2)","sched":{"Mon":[150,-1,-1,151,86,86,-1],"Tue":[151,-1,152,152,95,95,-1],"Wed":[-1,151,153,153,150,-1,-1],"Thu":[-1,-1,105,105,150,-1,-1],"Fri":[148,148,-1,151,6,6,-1],"Sat":[150,-1,8,8,-1,-1,-1]}},{"name":"Ms. Sarada T","sched":{"Mon":[9,9,154,154,-1,11,11],"Tue":[12,12,155,155,14,14,-1],"Wed":[15,15,156,-1,-1,-1,-1],"Thu":[16,16,78,78,156,-1,-1],"Fri":[-1,-1,-1,-1,-1,-1,156],"Sat":[-1,-1,156,-1,-1,-1,-1]}},{"name":"Mr. Prateek V Kumar","sched":{"Mon":[137,137,138,138,93,93,-1],"Tue":[-1,-1,141,141,-1,142,142],"Wed":[134,134,153,153,-1,-1,-1],"Thu":[143,143,38,38,-1,-1,-1],"Fri":[144,144,59,59,157,157,-1],"Sat":[-1,-1,-1,-1,-1,-1,-1]}},{"name":"Prof. Raghuram Mudumbi","sched":{"Mon":[-1,-1,-1,158,-1,159,-1],"Tue":[-1,-1,-1,-1,158,-1,-1],"Wed":[-1,-1,-1,-1,-1,-1,-1],"Thu":[-1,-1,-1,-1,-1,-1,-1],"Fri":[160,-1,-1,-1,-1,-1,-1],"Sat":[159,-1,-1,-1,160,-1,-1]}},{"name":"Prof. Apparsamy Perumal","sched":{"Mon":[-1,-1,-1,-1,160,-1,-1],"Tue":[-1,-1,-1,159,-1,160,-1],"Wed":[-1,-1,-1,158,-1,-1,-1],"Thu":[-1,-1,-1,-1,-1,-1,-1],"Fri":[-1,-1,-1,-1,-1,159,-1],"Sat":[-1,-1,-1,158,-1,-1,-1]}},{"name":"Dr. Ayyappa","sched":{"Mon":[-1,-1,161,161,-1,-1,162],"Tue":[163,163,-1,-1,164,164,-1],"Wed":[165,165,-1,-1,-1,-1,-1],"Thu":[-1,-1,166,166,-1,-1,-1],"Fri":[167,167,-1,-1,168,168,-1],"Sat":[-1,-1,-1,-1,169,170,-1]}},{"name":"Prof. Zaheed","sched":{"Mon":[171,-1,172,-1,-1,-1,-1],"Tue":[94,94,152,152,172,-1,-1],"Wed":[171,-1,-1,-1,-1,-1,-1],"Thu":[97,97,73,73,171,-1,-1],"Fri":[106,106,172,-1,157,157,-1],"Sat":[-1,-1,171,172,-1,-1,-1]}},{"name":"Prof. Thushara","sched":{"Mon":[173,-1,154,154,99,99,-1],"Tue":[100,100,155,155,-1,101,101],"Wed":[147,147,72,72,-1,-1,-1],"Thu":[-1,-1,-1,-1,-1,-1,-1],"Fri":[-1,174,111,111,149,149,-1],"Sat":[-1,-1,-1,173,-1,-1,174]}},{"name":"Prof. Padmavati (Maths)","sched":{"Mon":[175,-1,-1,176,177,-1,-1],"Tue":[178,-1,-1,-1,-1,176,-1],"Wed":[175,-1,-1,177,-1,-1,-1],"Thu":[-1,178,-1,176,-1,-1,-1],"Fri":[-1,176,178,175,-1,177,-1],"Sat":[-1,-1,177,178,-1,-1,-1]}}]};
+(function () {
+  const DAY_NAMES = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday" };
+  const BLOCKS = [[0, 1], [2, 3], [4, 5, 6]];            // sessions separated by short break / lunch
+  const P = DATA.periods, CELLS = DATA.cells, STAFF = DATA.staff;
+  const $ = id => document.getElementById(id);
+  const el = { lect: $("lect"), day: $("day"), time: $("time"), sem: $("sem"), sec: $("sec"),
+    strict: $("strict"), results: $("results"), empty: $("empty"), reset: $("reset") };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const bare = n => n.replace(/^(Prof|Dr|Mrs|Ms|Mr)\.\s*/i, "");
+  let overrides = {};                                    // manual checkbox edits
+
+  /* ---------- helpers on the timetable ---------- */
+  const cellAt = (st, day, p) => { const i = st.sched[day][p]; return i < 0 ? null : CELLS[i]; };
+  const keyOf = c => !c ? "free" : c.kind === "duty" ? "duty:" + c.name : c.kind + ":" + c.name + ":" + c.sem + ":" + c.secText;
+
+  function groupsFor(st, day) {                          // merge identical neighbouring periods inside a session
+    const out = [];
+    BLOCKS.forEach(b => {
+      let cur = null;
+      b.forEach(p => {
+        const c = cellAt(st, day, p), k = keyOf(c);
+        if (cur && cur.key === k) cur.end = p; else { cur = { start: p, end: p, cell: c, key: k }; out.push(cur); }
+      });
+    });
+    return out;
+  }
+  const isEmptyTT = st => !Object.values(st.sched).some(r => r.some(i => i >= 0));
+  function periodText(a, b) {
+    const s = P[a][1].split(" - ")[0], e = P[b][1].split(" - ")[1];
+    return (a === b ? P[a][0] : P[a][0] + "–" + P[b][0]) + " · " + s + " - " + e;
+  }
+  const semText = c => c.sem ? c.sem : "—";
+
+  /* ---------- fill the dropdowns ---------- */
+  const sorted = STAFF.map((s, i) => ({ s, i })).sort((a, b) => bare(a.s.name).localeCompare(bare(b.s.name)));
+  sorted.forEach(({ s, i }) => el.lect.add(new Option(s.name, i)));
+  Object.keys(DAY_NAMES).forEach(d => el.day.add(new Option(DAY_NAMES[d], d)));
+  el.time.add(new Option("All Day", "ALL"));
+  P.forEach((p, i) => el.time.add(new Option(p[0] + " · " + p[1], i)));
+
+  function teachingClasses(st) {
+    const list = [];
+    Object.keys(st.sched).forEach(d => st.sched[d].forEach(i => { if (i >= 0 && CELLS[i].kind === "class") list.push(CELLS[i]); }));
+    return list;
+  }
+  function fillSemSec() {
+    const keepSem = el.sem.value, keepSec = el.sec.value;
+    if (el.lect.value === "") {
+      [el.sem, el.sec].forEach(s => { s.innerHTML = '<option value="">— Select lecturer first —</option>'; s.disabled = true; });
+      return;
+    }
+    const cls = teachingClasses(STAFF[+el.lect.value]);
+    const sems = [...new Set(cls.map(c => c.sem).filter(Boolean))].sort((a, b) => a - b);
+    el.sem.innerHTML = '<option value="">All semesters</option>' + sems.map(s => `<option value="${s}">Semester ${s}</option>`).join("");
+    el.sem.value = sems.includes(keepSem) ? keepSem : "";
+    const secs = [...new Set(cls.filter(c => !el.sem.value || c.sem === el.sem.value).flatMap(c => c.secs))].sort();
+    el.sec.innerHTML = '<option value="">All sections</option>' + secs.map(s => `<option value="${s}">Section ${s}</option>`).join("");
+    el.sec.value = secs.includes(keepSec) ? keepSec : "";
+    el.sem.disabled = el.sec.disabled = false;
+  }
+
+  /* ---------- rendering ---------- */
+  function cellHtml(g, needed, strict) {
+    const span = g.end - g.start + 1;
+    let need = false; for (let p = g.start; p <= g.end; p++) if (needed.has(p)) need = true;
+    const nc = need ? " need-col" : "";
+    const c = g.cell;
+    if (!c) return `<td class="cell free${nc}" colspan="${span}"><b>Free</b></td>`;
+    if (c.kind === "duty") return `<td class="cell duty${nc}" colspan="${span}"><b>${strict ? "Busy" : "Free"}</b><span>${esc(c.name)}</span></td>`;
+    return `<td class="cell class${nc}" colspan="${span}"><b>${esc(c.name)}</b><span>Sem ${esc(semText(c))} · Sec ${esc(c.secText)}</span></td>`;
+  }
+
+  function render() {
+    const li = el.lect.value, day = el.day.value, time = el.time.value;
+    if (li === "" || day === "" || time === "") { el.results.hidden = true; el.empty.hidden = false; return; }
+    el.empty.hidden = true; el.results.hidden = false;
+    const me = STAFF[+li], strict = el.strict.checked;
+    const semF = el.sem.value, secF = el.sec.value;
+
+    // 1) the lecturer's own classes on that day
+    let mine = groupsFor(me, day).filter(g => g.cell && g.cell.kind === "class");
+    mine = mine.filter(g => (!semF || g.cell.sem === semF) && (!secF || g.cell.secs.includes(secF)));
+    if (time !== "ALL") { const t = +time; mine = mine.filter(g => g.start <= t && t <= g.end); }
+    const needed = new Set(); mine.forEach(g => { for (let p = g.start; p <= g.end; p++) needed.add(p); });
+
+    const when = time === "ALL" ? "All Day" : P[+time][0] + " (" + P[+time][1] + ")";
+    let html = `<div class="summary"><span class="chip">${esc(me.name)}</span><span class="chip">${DAY_NAMES[day]}</span><span class="chip">${esc(when)}</span>` +
+      `<span class="chip">${semF ? "Semester " + semF : "All semesters"}</span><span class="chip">${secF ? "Section " + secF : "All sections"}</span></div>`;
+
+    html += `<h2>i) Your schedule on ${DAY_NAMES[day]} is:</h2>`;
+    if (!mine.length) {
+      html += `<div class="msg">${esc(me.name)} has no class on ${DAY_NAMES[day]} for the selected time / semester / section, so nothing needs backup.</div>`;
+      el.results.innerHTML = html; return;
+    }
+    html += `<div class="wrap"><table id="sched"><thead><tr><th>Day</th><th>Periods</th><th>Subject Name</th><th>Semester</th><th>Section</th></tr></thead><tbody>` +
+      mine.map(g => `<tr><td>${DAY_NAMES[day]}</td><td>${esc(periodText(g.start, g.end))}</td><td>${esc(g.cell.name)}</td><td>${esc(semText(g.cell))}</td><td>${esc(g.cell.secText)}</td></tr>`).join("") +
+      `</tbody></table></div>`;
+
+    // 2) candidates
+    const rows = [];
+    STAFF.forEach((st, i) => {
+      if (i === +li) return;
+      let free = true;
+      needed.forEach(p => { const c = cellAt(st, day, p); if (c && (c.kind === "class" || (strict && c.kind === "duty"))) free = false; });
+      rows.push({ st, i, free });
+    });
+    rows.sort((a, b) => (b.free - a.free) || bare(a.st.name).localeCompare(bare(b.st.name)));
+    const checked = r => (r.st.name in overrides) ? overrides[r.st.name] : r.free;
+    const nFree = rows.filter(r => r.free).length;
+
+    html += `<h2>ii) The following staff can back you up:</h2>`;
+    html += `<p class="hint" style="margin:-4px 0 10px"><span id="count"></span> Periods to be covered are marked in yellow. Tick or untick "Available" to adjust.</p>`;
+    html += `<div class="wrap"><table class="grid"><thead><tr><th>Staff name</th>` +
+      P.map((p, i) => `<th class="p${needed.has(i) ? " need" : ""}">${p[0]}<small>${esc(p[1])}</small></th>`).join("") +
+      `<th>Available</th></tr></thead><tbody>` +
+      rows.map(r => {
+        const gs = groupsFor(r.st, day);
+        const tag = isEmptyTT(r.st) ? `<span class="small">no timetable entries</span>` : "";
+        return `<tr><td class="name">${esc(r.st.name)}${tag}</td>` + gs.map(g => cellHtml(g, needed, strict)).join("") +
+          `<td class="avail"><input type="checkbox" data-n="${esc(r.st.name)}" aria-label="Mark ${esc(r.st.name)} as available"${checked(r) ? " checked" : ""}>` +
+          `<small></small></td></tr>`;
+      }).join("") + `</tbody></table></div>`;
+    html += `<div class="legend"><span><i style="background:var(--class-bg)"></i>Has a class</span><span><i style="background:var(--free-bg)"></i>Free</span>` +
+      `<span><i style="background:var(--duty-bg)"></i>Research / consultancy / other duty slot</span><span><i style="background:var(--need)"></i>Period to be covered</span></div>`;
+    el.results.innerHTML = html;
+
+    const refresh = () => {
+      let n = 0;
+      el.results.querySelectorAll('td.avail input').forEach(cb => {
+        const lab = cb.parentNode.querySelector("small");
+        lab.textContent = cb.checked ? "Available" : "Not available";
+        lab.className = cb.checked ? "yes" : "nope";
+        if (cb.checked) n++;
+      });
+      $("count").textContent = n + " of " + rows.length + " staff marked available.";
+    };
+    el.results.querySelectorAll('td.avail input').forEach(cb => cb.addEventListener("change", () => { overrides[cb.dataset.n] = cb.checked; refresh(); }));
+    refresh();
+  }
+
+  /* ---------- events ---------- */
+  const rerender = () => { overrides = {}; render(); };
+  el.lect.addEventListener("change", () => { fillSemSec(); rerender(); });
+  el.sem.addEventListener("change", () => { fillSemSec(); rerender(); });
+  [el.sec, el.day, el.time, el.strict].forEach(e => e.addEventListener("change", rerender));
+  el.reset.addEventListener("click", () => {
+    el.lect.value = el.day.value = el.time.value = ""; el.strict.checked = false;
+    fillSemSec(); rerender();
+  });
+  fillSemSec(); render();
+})();
 </script>
 </body>
 </html>
